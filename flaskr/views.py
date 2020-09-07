@@ -4,7 +4,8 @@ import datetime
 from flask import abort, Blueprint, request, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
 
-from flaskr import db, login_manager, s3
+# from flaskr import db, login_manager, s3
+from flaskr import db, login_manager
 from flaskr.models import User, UserPasswordResetToken
 from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm
 
@@ -94,9 +95,11 @@ def user():
             file = request.files[form.picture_path.name].read()
             if file:
                 file_name = user_id + '_' + str(int(datetime.datetime.now().timestamp())) + '.jpg'
-                picture_path = 'https://sskyh-bucket.s3-ap-northeast-1.amazonaws.com/' + file_name
-                s3.put_object(Body=file, bucket='sskyh-bucket', Key=file_name)
-                user.picture_path = picture_path + file_name
+                picture_path = 'flaskr/static/user_image/' + file_name
+                open(picture_path, 'wb').write(file)
+                # picture_path = 'https://sskyh-bucket.s3-ap-northeast-1.amazonaws.com/' + file_name
+                # s3.put_object(Body=file, bucket='sskyh-bucket', Key=file_name)
+                user.picture_path = 'user_image/' + file_name
         db.session.commit()
         flash('ユーザ情報を更新しました')
     return render_template('user.html', user=user, form=form)

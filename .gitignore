@@ -4,3 +4,4 @@ migrations
 __pycache__
 test.sqlite3
 flaskr/config.py
+flaskr/static/user_image
