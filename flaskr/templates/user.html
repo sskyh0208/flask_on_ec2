@@ -2,8 +2,8 @@
 {% block content %}
 <div>
     {% if user.picture_path %}
-    <!-- <img src="{{ url_for('static', filename=user.picture_path) }}"> -->
-    <img src="{{ user.picture_path }}">
+    <img src="{{ url_for('static', filename=user.picture_path) }}">
+    <!-- <img src="{{ user.picture_path }}"> -->
     {% endif %}
     <form method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
