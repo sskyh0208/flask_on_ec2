@@ -1,0 +1,6 @@
+.vscode
+my_venv
+migrations
+__pycache__
+test.sqlite3
+flaskr/config.py

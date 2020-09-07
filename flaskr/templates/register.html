@@ -1,0 +1,15 @@
+{% extends "base_form.html" %}
+{% block content %}
+<div>
+    <form method="post">
+        {{ form.csrf_token }}
+        <dl>
+            <div>{{ form.username(placeholder='ユーザ名') }}</div>
+        </dl>
+        <dl>
+            <div>{{ form.email(placeholder='メールアドレス') }}</div>
+        </dl>
+        {{ form.submit()}}
+    </form>
+</div>
+{% endblock %}

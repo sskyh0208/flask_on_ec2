@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(仮)</title>
+</head>
+<body>
+    {% if get_flashed_messages() %}
+        {% for messages in get_flashed_messages() %}
+            <p>{{ messages }}</p>
+        {% endfor %}
+    {% endif %}
+    {% if form and form.errors %}
+        {% for field in form.errors %}
+            {% for error in form.errors[field] %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
