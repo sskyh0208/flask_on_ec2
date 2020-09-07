@@ -10,7 +10,7 @@ from flaskr import login_manager, db
 def login_user(user_id):
     return User.query.get(user_id)
 
-
+# ユーザー
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
         self.password = generate_password_hash(new_password)
         self.is_active = True
     
-
+# パスワード初期化
 class UserPasswordResetToken(db.Model):
     __tablename__ = 'user_password_reset_token'
 
@@ -85,7 +85,7 @@ class UserPasswordResetToken(db.Model):
     def delete_token(cls, token):
         cls.query.filter_by(token=str(token)).delete()
 
-
+# プロジェクト
 class Project(db.Model):
     __tablename__ = 'projects'
 
@@ -116,7 +116,7 @@ class Project(db.Model):
     def create_project(self):
         db.session.add(self)
     
-
+# プロジェクトの種類(開発・運用・保守等)
 class ProjectType(db.Model):
     __tablename__ = 'project_types'
 
@@ -126,7 +126,32 @@ class ProjectType(db.Model):
     def __init__(self, name):
         self.name = name
 
+# プロジェクトにおけるユーザの工数割り当て
+class ProjectAssigned(db.Model):
+    __tablename__ = 'project_assigned'
 
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    project = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    hour = db.Column(db.Float)
+
+    def __init__(self, user_id, project_id, hour):
+        self.user = user_id
+        self.project = project_id
+        self.hour = hour
+    
+    @classmethod
+    def select_project_assigned_by_user_id(cls, user_id):
+        return cls.query.filter_by(user=user_id)
+    
+    @classmethod
+    def select_project_assigned_by_project_id(cls, project_id):
+        return cls.query.filter_by(project=project_id)
+
+    def create_project_assigned(self):
+        db.session.add(self)
+
+# ユーザの工数
 class ManHour(db.Model):
     __tablename__ = 'man_hours'
 
