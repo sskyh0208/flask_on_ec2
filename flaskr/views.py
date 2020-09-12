@@ -6,8 +6,9 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 # from flaskr import db, login_manager, s3
 from flaskr import db, login_manager
-from flaskr.models import User, UserPasswordResetToken
-from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm
+from flaskr.models import User, UserPasswordResetToken, Project, ProjectType
+from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm, ProjectForm
+from flaskr.modules import image_resize, make_id_to_obj_dict
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -94,6 +95,8 @@ def user():
             user.email = form.email.data
             file = request.files[form.picture_path.name].read()
             if file:
+                print(type(file))
+                file = image_resize(file)
                 file_name = user_id + '_' + str(int(datetime.datetime.now().timestamp())) + '.jpg'
                 picture_path = 'flaskr/static/user_image/' + file_name
                 open(picture_path, 'wb').write(file)
@@ -103,3 +106,30 @@ def user():
         db.session.commit()
         flash('ユーザ情報を更新しました')
     return render_template('user.html', user=user, form=form)
+
+@bp.route('/projects', methods=['GET', 'POST'])
+@login_required
+def projects():
+    form = ProjectForm(request.form)
+    projects = Project.query.all()
+    project_dict = make_id_to_obj_dict(ProjectType.query.all())
+    if request.method == 'POST' and form.validate():
+        project = Project(
+            form.name.data,
+            form.type.data,
+            form.price.data,
+            form.time.data
+        )
+        with db.session.begin(subtransactions=True):
+            project.create_project()
+        db.session.commit()
+        return redirect(url_for('app.projects'))
+    return render_template('projects.html', form=form, projects=projects, project_dict=project_dict)
+
+@bp.route('/project_delete/<int:id>')
+@login_required
+def project_delete(id):
+    with db.session.begin(subtransactions=True):
+        Project.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect(url_for('app.projects'))

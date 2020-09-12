@@ -1,10 +1,10 @@
 from wtforms import Form, ValidationError
-from wtforms.fields import StringField, PasswordField, SubmitField, FileField
+from wtforms.fields import StringField, PasswordField, SubmitField, FileField, SelectField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask import flash
 from flask_login import current_user
 
-from flaskr.models import User
+from flaskr.models import User, ProjectType
 
 
 class LoginForm(Form):
@@ -45,3 +45,18 @@ class UserForm(Form):
                 flash('そのメールアドレスは既に登録されています')
                 return False
         return True
+
+class ProjectForm(Form):
+    name = StringField('プロジェクト名', validators=[DataRequired()])
+    type = SelectField('種別', coerce=int)
+    price = FloatField('費用', validators=[DataRequired()])
+    time = FloatField('工数', validators=[DataRequired()])
+    submit = SubmitField('登録')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._set_project_types()
+        
+    def _set_project_types(self):
+        project_types = ProjectType.query.all()
+        self.type.choices = [(project_type.id, project_type.name) for project_type in project_types]

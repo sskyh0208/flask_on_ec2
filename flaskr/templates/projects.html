@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "project_register.html" %}
+<div>
+    <table>
+        <tr>
+            <th>名前</th>
+            <th>種別</th>
+            <th>費用</th>
+            <th>時間</th>
+            <th></th>
+        </tr>
+        {% for project in projects %}
+        <tr>
+            <td>{{ project.name }}</td>
+            <td>{{ project_dict[project.type].name }}</td>
+            <td>{{ project.price }}</td>
+            <td>{{ project.time }}</td>
+            <td><a href="{{ url_for('app.project_delete', id=project.id) }}">削除</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

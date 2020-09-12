@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flaskr.config import BaseConfig, TestConfig
 
-import boto3
+# import boto3
 
 
 login_manager = LoginManager()

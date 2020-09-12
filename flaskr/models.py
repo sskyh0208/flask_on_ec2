@@ -100,10 +100,6 @@ class Project(db.Model):
         self.type = type
         self.price = price
         self.time = time
-
-    @classmethod
-    def select_project_all(cls):
-        return cls.query.all()
     
     @classmethod
     def select_project_by_id(cls, id):

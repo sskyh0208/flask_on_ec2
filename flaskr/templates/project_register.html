@@ -1,0 +1,18 @@
+<div>
+    <form method="post">
+        {{ form.csrf_token}}
+        <dl>
+            <div>{{ form.name(placeholder='プロジェクト名') }}</div>
+        </dl>
+        <dl>
+            <div>{{ form.type(placeholder='種類') }}</div>
+        </dl>
+        <dl>
+            <div>{{ form.price(placeholder='費用') }}</div>
+        </dl>
+        <dl>
+            <div>{{ form.time(placeholder='総工数') }}</div>
+        </dl>
+        {{ form.submit }}
+    </form>
+</div>
