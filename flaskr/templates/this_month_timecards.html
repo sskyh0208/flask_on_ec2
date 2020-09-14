@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h1>{{ monthly_cal.year }}年 {{ monthly_cal.month }}月</h1>
+    <table>
+        <tr>
+            <th>日付</th>
+            <th></th>
+            <th>出勤時間</th>
+            <th>退勤時間</th>
+            <th>労働時間</th>
+        </tr>
+        {% for day, week in monthly_cal.day.items() %}
+        <tr>
+            <td>{{ day }}({{ week }})</td>
+            <td></td>
+            {% if day in timecard_table %}
+            <td>{{ timecard_table[day].start.strftime('%H:%M') }}</td>
+            {% if not timecard_table[day].end is none %}
+            <td>{{ timecard_table[day].end.strftime('%H:%M') }}</td>
+            <td>{{ timecard_table[day].working_hours }}</td>
+            {% else %}
+            <td></td>
+            <td></td>
+            {% endif %}
+            {% else %}
+            <td></td>
+            <td></td>
+            <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}]

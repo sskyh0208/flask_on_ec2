@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
+from sqlalchemy import and_
 from uuid import uuid4
 
 from flaskr import login_manager, db
@@ -20,6 +21,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), default=generate_password_hash('userpass'))
     picture_path = db.Column(db.Text)
     is_active = db.Column(db.Boolean, unique=False, default=False)
+    is_admin = db.Column(db.Boolean, unique=False, default=False)
     create_at = db.Column(db.DateTime, default=datetime.now())
     update_at = db.Column(db.DateTime, default=datetime.now())
 
@@ -177,3 +179,57 @@ class ManHour(db.Model):
     
     def create_manhour(self):
         db.session.add(self)
+
+class TimeCard(db.Model):
+    __tablename__ = 'timecards'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    date = db.Column(db.Date, default=datetime.today())
+    start = db.Column(db.DateTime, default=None)
+    end = db.Column(db.DateTime, default=None)
+    working_hours = db.Column(db.Float, default=0)
+
+    def __init__(self, user_id):
+        self.user = user_id
+    
+    def punch_in(self):
+        self.start = self._make_fix_punch_time()
+        db.session.add(self)
+
+    def punch_out(self):
+        self.end = self._make_fix_punch_time()
+        hours = ((self.end - self.start).seconds / 60) / 60
+        self.working_hours = hours - 1 if hours >= 4.5 else hours
+        db.session.add(self)
+    
+    def _make_fix_punch_time(self):
+        punch_time = datetime.now()
+        hour = punch_time.hour
+        minute = punch_time.minute
+
+        if 1 <= minute <= 15:
+            minute = 15
+        elif 16 <= minute <= 30:
+            minute = 30
+        elif 31 <= minute <= 45:
+            minute = 45
+        else:
+            minute = 0
+            hour += 1 
+        punch_time = datetime(punch_time.year, punch_time.month, punch_time.day, hour, minute)
+        return punch_time
+
+    @classmethod
+    def select_today_timecard_by_user_id(cls, user_id):
+        return cls.query.filter_by(user=user_id, date=datetime.today().strftime('%Y-%m-%d')).first()
+    
+    @classmethod
+    def select_monthly_timecards_by_user_id(cls, user_id, year, month):
+        target = f'{year}-{month}%'
+        return cls.query.filter(
+            and_(
+            cls.user==user_id,
+            cls.date.like(target)
+            )
+        ).order_by(cls.date).all()

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+{% if current_user.is_admin %}
 {% include "project_register.html" %}
+{% endif %}
 <div>
     <table>
         <tr>
@@ -8,7 +10,9 @@
             <th>種別</th>
             <th>費用</th>
             <th>時間</th>
+            {% if current_user.is_admin %}
             <th></th>
+            {% endif %}
         </tr>
         {% for project in projects %}
         <tr>
@@ -16,7 +20,9 @@
             <td>{{ project_dict[project.type].name }}</td>
             <td>{{ project.price }}</td>
             <td>{{ project.time }}</td>
+            {% if current_user.is_admin %}
             <td><a href="{{ url_for('app.project_delete', id=project.id) }}">削除</a></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>

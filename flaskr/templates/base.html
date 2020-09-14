@@ -3,16 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>(仮)</title>
 </head>
 <body>
-    <ul>
-        <li><a href="{{ url_for('app.home') }}">ホーム</a></li>
-        <li><a href="{{ url_for('app.projects') }}">プロジェクト</a></li>
-        <li><a href="{{ url_for('app.user') }}">ユーザ情報</a></li>
-        <li><a href="{{ url_for('app.logout') }}">ログアウト</a></li>
-    </ul>
-    {% block content %}
-    {% endblock %}
+    <header>
+        <nav id="main-nav">
+            <ul>
+                <li><a href="{{ url_for('app.home') }}"><i class="fas fa-home"></i><span>ホーム</span></a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('app.projects') }}"><i class="fas fa-table"></i><span>プロジェクト</span></a></li>
+                <li><a href="{{ url_for('app.timecard') }}"><i class="fas fa-user-clock"></i><span>タイムカード</span></a></li>
+                <li><a href="{{ url_for('app.user') }}"><i class="fas fa-user"></i><span>ユーザ</span></a></li>
+                <li><a href="{{ url_for('app.logout') }}"><i class="fas fa-sign-out-alt"></i><span>ログアウト</span></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <div id="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <script src="https://kit.fontawesome.com/02306e5c48.js" crossorigin="anonymous"></script>
 </body>
 </html>

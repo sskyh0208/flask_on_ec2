@@ -6,9 +6,9 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 # from flaskr import db, login_manager, s3
 from flaskr import db, login_manager
-from flaskr.models import User, UserPasswordResetToken, Project, ProjectType
+from flaskr.models import User, UserPasswordResetToken, Project, ProjectType, TimeCard
 from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm, ProjectForm
-from flaskr.modules import image_resize, make_id_to_obj_dict
+from flaskr.modules import image_resize, make_id_to_obj_dict, make_date_label, make_now_time_lable, make_monthly_calender, reformat_number
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -93,9 +93,9 @@ def user():
         with db.session.begin(subtransactions=True):
             user.username = form.username.data
             user.email = form.email.data
+            user.is_admin = form.admin.data
             file = request.files[form.picture_path.name].read()
             if file:
-                print(type(file))
                 file = image_resize(file)
                 file_name = user_id + '_' + str(int(datetime.datetime.now().timestamp())) + '.jpg'
                 picture_path = 'flaskr/static/user_image/' + file_name
@@ -133,3 +133,62 @@ def project_delete(id):
         Project.query.filter_by(id=id).delete()
     db.session.commit()
     return redirect(url_for('app.projects'))
+
+@bp.route('/timecard')
+@login_required
+def timecard():
+    user = User.select_user_by_email(current_user.email)
+    timecard = TimeCard.select_today_timecard_by_user_id(user.id)
+
+    status = {}
+    if not timecard:
+        status['status'] = '未出勤'
+        status['btn'] = '出勤'
+    elif timecard.start and timecard.end is None:
+        status['status'] = '出勤中'
+        status['btn'] = '退勤'
+    else:
+        status['status'] = '業務終了'
+        status['btn'] = '退勤'
+
+    today = datetime.datetime.today()
+    status['today'] = make_date_label(today.year, today.month, today.day)
+    status['time'] = make_now_time_lable()
+
+    return render_template('timecard.html', timecard=timecard, status=status)
+
+@bp.route('/this_month_timecards', methods=['GET'])
+@login_required
+def this_month_timecards():
+    user = User.select_user_by_email(current_user.email)
+    today = datetime.datetime.today()
+    timecards = TimeCard.select_monthly_timecards_by_user_id(user.id, today.year, reformat_number(today.month))
+    timecard_table = {}
+    for timecard in timecards:
+        print(timecard)
+        day = str(timecard.date).split('-')[2]
+        timecard_table[int(day)] = timecard
+    
+    for k, v in timecard_table.items():
+        print(f'{k} : {v}')
+    monthly_cal = make_monthly_calender(today.year, today.month)
+
+    return render_template('this_month_timecards.html', timecards=timecards, monthly_cal=monthly_cal, timecard_table=timecard_table)
+
+
+@bp.route('/stamping', methods=['POST'])
+@login_required
+def stamping():
+    user = User.select_user_by_email(current_user.email)
+    timecard = TimeCard.select_today_timecard_by_user_id(user.id)
+    if not timecard:
+        timecard = TimeCard(user.id)
+        with db.session.begin(subtransactions=True):
+            timecard.punch_in()
+        db.session.commit()
+    else:
+        with db.session.begin(subtransactions=True):
+            timecard.punch_out()
+        db.session.commit()
+
+    return redirect(url_for('app.timecard'))

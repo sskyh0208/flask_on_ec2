@@ -1,5 +1,5 @@
 from wtforms import Form, ValidationError
-from wtforms.fields import StringField, PasswordField, SubmitField, FileField, SelectField, FloatField
+from wtforms.fields import StringField, PasswordField, SubmitField, FileField, SelectField, FloatField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask import flash
 from flask_login import current_user
@@ -33,6 +33,7 @@ class PasswordResetForm(Form):
 class UserForm(Form):
     email = StringField('メールアドレス', validators=[DataRequired(), Email('メールアドレスが誤っています')])
     username = StringField('名前', validators=[DataRequired()])
+    admin = BooleanField('管理者')
     picture_path = FileField('画像アップロード')
     submit = SubmitField('更新')
 
