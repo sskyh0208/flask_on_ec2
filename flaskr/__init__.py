@@ -19,7 +19,7 @@ migrate = Migrate()
 db = SQLAlchemy()
 with open('/var/www/flask_on_ec2/flaskr/config.yml', encoding='utf-8') as file:
     conf = yaml.safe_load(file)
-s3 = boto3.cilent('s3', 
+s3 = boto3.resource('s3', 
     aws_access_key_id=BaseConfig.AWS_ACCESS_KEY,
     aws_secret_access_key=BaseConfig.AWS_SECRET_ACCESS_KEY)
 
