@@ -1,7 +1,5 @@
 import io
 import calendar
-import win32com.client
-import pythoncom
 from datetime import datetime
 from PIL import Image
 
