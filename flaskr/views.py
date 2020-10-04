@@ -3,11 +3,13 @@ import datetime
 
 from flask import abort, Blueprint, request, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message
 
 # from flaskr import db, login_manager, s3
-from flaskr import db, login_manager
-from flaskr.models import User, UserPasswordResetToken
-from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm
+from flaskr import db, login_manager, mail, conf
+from flaskr.models import User, UserPasswordResetToken, Project, ProjectType, TimeCard
+from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm, ProjectForm
+from flaskr.modules import image_resize, make_id_to_obj_dict, make_date_label, make_now_time_lable, make_monthly_calender, reformat_number
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -59,8 +61,12 @@ def register():
             token = UserPasswordResetToken.publish_token(user)
         db.session.commit()
         flash('パスワード設定用のURLをメールにてお送りしました。ご確認ください')
-        print(f'パスワード設定用URL用token: /password_reset/{token}')
-        # メール送信処理
+        subject = conf['TempRegister']['Subject']
+        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
+        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
+        msg = Message(subject, sender='admin', recipients=[form.email.data])
+        msg.body = body
+        mail.send(msg)
         return redirect(url_for('app.login'))
     return render_template('register.html', form=form)
 
@@ -77,7 +83,12 @@ def password_reset(token):
             user.save_new_password(new_password)
             UserPasswordResetToken.delete_token(token)
         db.session.commit()
-        flash('パスワードを更新しました')
+        flash('本登録が完了しました')
+        subject = conf['Register']['Subject']
+        body = conf['Register']['Body'].replace('<username>', user.username)
+        msg = Message(subject, sender='admin', recipients=[user.email])
+        msg.body = body
+        mail.send(msg)
         # メール送信処理
         return redirect(url_for('app.login'))
     return render_template('password_reset.html', form=form)
@@ -92,8 +103,10 @@ def user():
         with db.session.begin(subtransactions=True):
             user.username = form.username.data
             user.email = form.email.data
+            user.is_admin = form.admin.data
             file = request.files[form.picture_path.name].read()
             if file:
+                file = image_resize(file)
                 file_name = user_id + '_' + str(int(datetime.datetime.now().timestamp())) + '.jpg'
                 picture_path = 'flaskr/static/user_image/' + file_name
                 open(picture_path, 'wb').write(file)
@@ -103,3 +116,89 @@ def user():
         db.session.commit()
         flash('ユーザ情報を更新しました')
     return render_template('user.html', user=user, form=form)
+
+@bp.route('/projects', methods=['GET', 'POST'])
+@login_required
+def projects():
+    form = ProjectForm(request.form)
+    projects = Project.query.all()
+    project_dict = make_id_to_obj_dict(ProjectType.query.all())
+    if request.method == 'POST' and form.validate():
+        project = Project(
+            form.name.data,
+            form.type.data,
+            form.price.data,
+            form.time.data
+        )
+        with db.session.begin(subtransactions=True):
+            project.create_project()
+        db.session.commit()
+        return redirect(url_for('app.projects'))
+    return render_template('projects.html', form=form, projects=projects, project_dict=project_dict)
+
+@bp.route('/project_delete/<int:id>')
+@login_required
+def project_delete(id):
+    with db.session.begin(subtransactions=True):
+        Project.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect(url_for('app.projects'))
+
+@bp.route('/timecard')
+@login_required
+def timecard():
+    user = User.select_user_by_email(current_user.email)
+    timecard = TimeCard.select_today_timecard_by_user_id(user.id)
+
+    status = {}
+    if not timecard:
+        status['status'] = '未出勤'
+        status['btn'] = '出勤'
+    elif timecard.start and timecard.end is None:
+        status['status'] = '出勤中'
+        status['btn'] = '退勤'
+    else:
+        status['status'] = '業務終了'
+        status['btn'] = '退勤'
+
+    today = datetime.datetime.today()
+    status['today'] = make_date_label(today.year, today.month, today.day)
+    status['time'] = make_now_time_lable()
+
+    return render_template('timecard.html', timecard=timecard, status=status)
+
+@bp.route('/this_month_timecards', methods=['GET'])
+@login_required
+def this_month_timecards():
+    user = User.select_user_by_email(current_user.email)
+    today = datetime.datetime.today()
+    timecards = TimeCard.select_monthly_timecards_by_user_id(user.id, today.year, reformat_number(today.month))
+    timecard_table = {}
+    for timecard in timecards:
+        print(timecard)
+        day = str(timecard.date).split('-')[2]
+        timecard_table[int(day)] = timecard
+    
+    for k, v in timecard_table.items():
+        print(f'{k} : {v}')
+    monthly_cal = make_monthly_calender(today.year, today.month)
+
+    return render_template('this_month_timecards.html', timecards=timecards, monthly_cal=monthly_cal, timecard_table=timecard_table)
+
+
+@bp.route('/stamping', methods=['POST'])
+@login_required
+def stamping():
+    user = User.select_user_by_email(current_user.email)
+    timecard = TimeCard.select_today_timecard_by_user_id(user.id)
+    if not timecard:
+        timecard = TimeCard(user.id)
+        with db.session.begin(subtransactions=True):
+            timecard.punch_in()
+        db.session.commit()
+    else:
+        with db.session.begin(subtransactions=True):
+            timecard.punch_out()
+        db.session.commit()
+
+    return redirect(url_for('app.timecard'))

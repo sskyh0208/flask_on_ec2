@@ -1,0 +1,67 @@
+/******************************************************************
+Stylesheet: ベーススタイル
+******************************************************************/
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#main-content {
+    width: 90%;
+    margin: 20px auto;
+    padding-top: 65px;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    background-color: #333;
+    // height: 100px;
+    height: 65px;
+    width: 100%;
+
+    & a {
+        color: #ffffff;
+        text-decoration: none;
+        white-space: nowrap;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+
+        & span {
+            font-size: 8px;
+        }
+    }
+
+    & nav {
+        width: 100%;
+
+        & ul {
+            display: flex;
+            justify-content: space-between;
+            list-style: none;
+            padding: 0 20px;
+        }
+
+        & li {
+            margin-right: 10px;
+        }
+    }
+}
+
+form {
+    // display:flex;
+    // flex-wrap: wrap;
+
+    & dl {
+        margin: 0;
+        margin-right: 10px;
+    }
+}
+
+.user-info {
+    & .user-img {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ status.today }}</h1>
+<h1>{{ status.status }}</h1>
+<h1>{{ status.time }}</h1>
+<p>出勤時間: 
+    {% if timecard.start %}
+    {{ timecard.start.strftime('%H:%M') }}
+    {% endif %}
+</p>
+<p>退勤時間: 
+    {% if timecard.end %}
+    {{ timecard.end.strftime('%H:%M') }}
+    {% endif %}
+</p>
+<form method="post" action="{{ url_for('app.stamping') }}">
+    {% if not timecard.end %}
+    <input type="submit" value="{{ status.btn }}">
+    {% endif %}
+</form>
+<!-- 20201004 -->
+<!-- <a href="{{ url_for('app.this_month_timecards') }}">勤務表</a> -->
+{% endblock %}]

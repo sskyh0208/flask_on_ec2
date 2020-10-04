@@ -1,0 +1,70 @@
+@charset "UTF-8";
+/******************************************************************
+Stylesheet: ベーススタイル
+******************************************************************/
+body {
+  padding: 0;
+  margin: 0;
+}
+
+#main-content {
+  width: 90%;
+  margin: 20px auto;
+  padding-top: 65px;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  background-color: #333;
+  height: 65px;
+  width: 100%;
+}
+
+header a {
+  color: #ffffff;
+  text-decoration: none;
+  white-space: nowrap;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  text-align: center;
+}
+
+header a span {
+  font-size: 8px;
+}
+
+header nav {
+  width: 100%;
+}
+
+header nav ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  list-style: none;
+  padding: 0 20px;
+}
+
+header nav li {
+  margin-right: 10px;
+}
+
+form dl {
+  margin: 0;
+  margin-right: 10px;
+}
+
+.user-info .user-img {
+  width: 100%;
+  text-align: center;
+}
+/*# sourceMappingURL=style.css.map */

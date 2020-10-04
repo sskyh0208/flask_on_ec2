@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
+<div class="user-info">
     {% if user.picture_path %}
-    <img src="{{ url_for('static', filename=user.picture_path) }}">
+    <div class="user-img">
+        <img src="{{ url_for('static', filename=user.picture_path) }}">
+    </div>
     <!-- <img src="{{ user.picture_path }}"> -->
     {% endif %}
     <form method="post" enctype="multipart/form-data">
@@ -12,6 +14,9 @@
         </dl>
         <dl>
             <div>{{ form.username(value=user.username) }}</div>
+        </dl>
+        <dl>
+            <div>管理者権限: {{ form.admin(checked=user.is_admin) }}</div>
         </dl>
         <dl>
             <div>{{ form.picture_path() }}</div>
