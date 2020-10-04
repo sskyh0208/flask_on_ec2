@@ -62,8 +62,8 @@ def register():
         db.session.commit()
         flash('パスワード設定用のURLをメールにてお送りしました。ご確認ください')
         subject = conf['TempRegister']['Subject']
-        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
-        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
+        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
+        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
         msg = Message(subject, sender='admin', recipients=[form.email.data])
         msg.body = body
         mail.send(msg)
