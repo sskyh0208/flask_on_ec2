@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
 
 # from flaskr import db, login_manager, s3
-from flaskr import db, login_manager, mail, conf
+from flaskr import db, login_manager, mail, conf, s3
 from flaskr.models import User, UserPasswordResetToken, Project, ProjectType, TimeCard
 from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm, ProjectForm
 from flaskr.modules import image_resize, make_id_to_obj_dict, make_date_label, make_now_time_lable, make_monthly_calender, reformat_number
