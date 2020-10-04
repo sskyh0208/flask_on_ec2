@@ -3,9 +3,10 @@ import datetime
 
 from flask import abort, Blueprint, request, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message
 
 # from flaskr import db, login_manager, s3
-from flaskr import db, login_manager
+from flaskr import db, login_manager, mail, conf
 from flaskr.models import User, UserPasswordResetToken, Project, ProjectType, TimeCard
 from flaskr.forms import LoginForm, RegisterForm, PasswordResetForm, UserForm, ProjectForm
 from flaskr.modules import image_resize, make_id_to_obj_dict, make_date_label, make_now_time_lable, make_monthly_calender, reformat_number
@@ -60,8 +61,12 @@ def register():
             token = UserPasswordResetToken.publish_token(user)
         db.session.commit()
         flash('パスワード設定用のURLをメールにてお送りしました。ご確認ください')
-        print(f'パスワード設定用URL用token: /password_reset/{token}')
-        # メール送信処理
+        subject = conf['TempRegister']['Subject']
+        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
+        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
+        msg = Message(subject, sender='admin', recipients=[form.email.data])
+        msg.body = body
+        mail.send(msg)
         return redirect(url_for('app.login'))
     return render_template('register.html', form=form)
 
@@ -78,7 +83,12 @@ def password_reset(token):
             user.save_new_password(new_password)
             UserPasswordResetToken.delete_token(token)
         db.session.commit()
-        flash('パスワードを更新しました')
+        flash('本登録が完了しました')
+        subject = conf['Register']['Subject']
+        body = conf['Register']['Body'].replace('<username>', user.username)
+        msg = Message(subject, sender='admin', recipients=[user.email])
+        msg.body = body
+        mail.send(msg)
         # メール送信処理
         return redirect(url_for('app.login'))
     return render_template('password_reset.html', form=form)

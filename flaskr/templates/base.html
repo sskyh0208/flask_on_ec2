@@ -12,15 +12,28 @@
             <ul>
                 <li><a href="{{ url_for('app.home') }}"><i class="fas fa-home"></i><span>ホーム</span></a></li>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('app.projects') }}"><i class="fas fa-table"></i><span>プロジェクト</span></a></li>
                 <li><a href="{{ url_for('app.timecard') }}"><i class="fas fa-user-clock"></i><span>タイムカード</span></a></li>
-                <li><a href="{{ url_for('app.user') }}"><i class="fas fa-user"></i><span>ユーザ</span></a></li>
+                <!-- 20201004 -->
+                <!-- <li><a href="{{ url_for('app.projects') }}"><i class="fas fa-table"></i><span>プロジェクト</span></a></li>
+                <li><a href="{{ url_for('app.user') }}"><i class="fas fa-user"></i><span>ユーザ</span></a></li> -->
                 <li><a href="{{ url_for('app.logout') }}"><i class="fas fa-sign-out-alt"></i><span>ログアウト</span></a></li>
                 {% endif %}
             </ul>
         </nav>
     </header>
     <div id="main-content">
+        {% if get_flashed_messages() %}
+            {% for messages in get_flashed_messages() %}
+                <p>{{ messages }}</p>
+            {% endfor %}
+        {% endif %}
+        {% if form and form.errors %}
+            {% for field in form.errors %}
+                {% for error in form.errors[field] %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
         {% block content %}
         {% endblock %}
     </div>
