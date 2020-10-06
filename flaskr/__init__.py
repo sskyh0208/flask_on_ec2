@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flaskr.config import BaseConfig, TestConfig
 
-# import boto3
+import boto3
 
 
 login_manager = LoginManager()
