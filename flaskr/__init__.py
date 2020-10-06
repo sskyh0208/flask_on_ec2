@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flaskr.config import BaseConfig, TestConfig
 
-import boto3
+# import boto3
 
 
 login_manager = LoginManager()
@@ -17,6 +17,8 @@ login_manager.login_message = 'ログインしてください'
 mail = Mail()
 migrate = Migrate()
 db = SQLAlchemy()
+# with open('flaskr/config.yml', encoding='utf-8') as file:
+#     conf = yaml.safe_load(file)
 with open('/var/www/flask_on_ec2/flaskr/config.yml', encoding='utf-8') as file:
     conf = yaml.safe_load(file)
 s3 = boto3.client('s3', 

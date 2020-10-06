@@ -1,23 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>{{ status.today }}</h1>
-<h1>{{ status.status }}</h1>
-<h1>{{ status.time }}</h1>
-<p>出勤時間: 
-    {% if timecard.start %}
-    {{ timecard.start.strftime('%H:%M') }}
-    {% endif %}
-</p>
-<p>退勤時間: 
-    {% if timecard.end %}
-    {{ timecard.end.strftime('%H:%M') }}
-    {% endif %}
-</p>
-<form method="post" action="{{ url_for('app.stamping') }}">
-    {% if not timecard.end %}
-    <input type="submit" value="{{ status.btn }}">
-    {% endif %}
-</form>
-<!-- 20201004 -->
-<!-- <a href="{{ url_for('app.this_month_timecards') }}">勤務表</a> -->
+<div class="timecard">
+    <div class="timecard__wrapper">
+        <div class="timecard__header">
+            <h3>勤務表一覧</h3>
+            <a class="btn" href="{{ url_for('app.this_month_timecards') }}">前月</a>
+            <a class="btn" href="{{ url_for('app.this_month_timecards') }}">今月</a>
+            <a class="btn" href="{{ url_for('app.this_month_timecards') }}">次月</a>
+        </div>
+        <div class="timecard__main">
+            <h2>{{ status.today }}</h1>
+            <h1>{{ status.time }}</h1>
+            <h3>{{ status.status }}</h3>
+        </div>
+        <div class="timecard__sub">
+            <p>出勤時間: 
+                {% if timecard.start %}
+                {{ timecard.start.strftime('%H:%M') }}
+                {% endif %}
+            </p>
+            <p>退勤時間: 
+                {% if timecard.end %}
+                {{ timecard.end.strftime('%H:%M') }}
+                {% endif %}
+            </p>
+        </div>
+        <div class="timecard__form">
+            <form method="post" action="{{ url_for('app.stamping') }}">
+                {% if not timecard.end %}
+                <input class="timecard-btn" type="submit" value="{{ status.btn }}">
+                {% else %}
+                <input class="timecard-btn__disabled" type="submit" value="{{ status.btn }}" disabled>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}]
