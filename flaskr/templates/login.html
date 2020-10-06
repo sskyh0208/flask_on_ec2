@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-    <form method="post">
-        {{ form.csrf_token }}
-        <dl>
-            <div>{{ form.email(placeholder='メールアドレス') }}</div>
-        </dl>
-        <dl>
-            <div>{{ form.password(placeholder='パスワード') }}</div>
-        </dl>
-        {{ form.submit()}}
-    </form>
+<div class="login">
+    <div class="login__wrapper">
+        <h1>仮システム</h1>
+        <form class="login__form" method="post">
+            {{ form.csrf_token }}
+            <dl>
+                <div>{{ form.email(placeholder='メールアドレス') }}</div>
+            </dl>
+            <dl>
+                <div>{{ form.password(placeholder='パスワード') }}</div>
+            </dl>
+            {{ form.submit()}}
+        </form>
+        <a href="{{ url_for('app.register') }}">新規登録</a>
+    </div>
 </div>
-<a href="{{ url_for('app.register') }}">新規登録</a>
 {% endblock %}

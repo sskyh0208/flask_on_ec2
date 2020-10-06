@@ -9,21 +9,24 @@ body {
 
 #main-content {
   width: 90%;
-  margin: 20px auto;
-  padding-top: 65px;
+  margin: 0px auto;
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
 }
 
 header {
   position: fixed;
   top: 0;
-  background-color: #333;
+  background-color: #002655;
   height: 65px;
   width: 100%;
 }
 
 header a {
   color: #ffffff;
-  text-decoration: none;
   white-space: nowrap;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -66,5 +69,93 @@ form dl {
 .user-info .user-img {
   width: 100%;
   text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  color: #ffffff;
+  padding: 8px 16px;
+  background-color: #002655;
+  border-radius: 8px;
+  border-bottom: solid 2px #000000;
+  -webkit-transition: .100s;
+  transition: .100s;
+}
+
+.btn:hover {
+  border-bottom: none;
+  -webkit-transform: translateY(4px);
+          transform: translateY(4px);
+}
+
+.timecard-btn {
+  display: inline-block;
+  color: #ffffff;
+  padding: 16px 48px;
+  background-color: #10A2D4;
+  border-radius: 8px;
+  border-bottom: solid 2px #000000;
+  -webkit-transition: .100s;
+  transition: .100s;
+}
+
+.timecard-btn:hover {
+  border-bottom: none;
+  -webkit-transform: translateY(4px);
+          transform: translateY(4px);
+}
+
+.timecard-btn__disabled {
+  display: inline-block;
+  color: #ffffff;
+  padding: 16px 48px;
+  background-color: gray;
+  border-radius: 8px;
+}
+
+.timecard {
+  padding-top: 65px;
+}
+
+.timecard__wrapper {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  height: 300px;
+  width: 300px;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.login {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.login__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 300px;
+  width: 300px;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.login__wrapper input {
+  width: 100%;
+  height: 30px;
+}
+
+.login__wrapper a {
+  display: block;
+  margin-top: 10px;
+}
+
+.home {
+  padding-top: 65px;
 }
 /*# sourceMappingURL=style.css.map */
