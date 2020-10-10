@@ -21,6 +21,7 @@ header {
   position: fixed;
   top: 0;
   background-color: #002655;
+  z-index: 2;
   height: 65px;
   width: 100%;
 }
@@ -101,8 +102,8 @@ form dl {
 
 .timecard-btn:hover {
   border-bottom: none;
-  -webkit-transform: translateY(4px);
-          transform: translateY(4px);
+  -webkit-transform: translateY(2px);
+          transform: translateY(2px);
 }
 
 .timecard-btn__disabled {
@@ -128,13 +129,13 @@ form dl {
   text-align: center;
 }
 
-.login {
+.form {
   position: relative;
   width: 100%;
   height: 100vh;
 }
 
-.login__wrapper {
+.form__wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -145,17 +146,102 @@ form dl {
   text-align: center;
 }
 
-.login__wrapper input {
+.form__wrapper input {
   width: 100%;
   height: 30px;
 }
 
-.login__wrapper a {
+.form__wrapper a {
   display: block;
   margin-top: 10px;
 }
 
+.form__wrapper .messages {
+  display: block;
+  position: absolute;
+  width: 100%;
+  top: 55px;
+}
+
+.form__wrapper .messages p {
+  font-size: 12px;
+  color: red;
+}
+
 .home {
   padding-top: 65px;
+}
+
+.calender {
+  padding-top: 65px;
+  height: 100%;
+}
+
+.calender__wrapper {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.calender__title {
+  text-align: center;
+}
+
+.calender__table table {
+  width: 100%;
+}
+
+.calender__table th {
+  width: 30%;
+}
+
+.calender__table th:first-child {
+  width: 5%;
+}
+
+.calender__table td {
+  border-bottom: 1px dashed gray;
+  text-align: center;
+}
+
+.calender__table td:first-child {
+  text-align: right;
+}
+
+.calender__table td:hover:not(:first-child):not(:last-child) {
+  background-color: #b3b3b3;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  z-index: 100;
+  top: 0;
+  left: 0;
+}
+
+.modal__bg {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal__bg h1 {
+  position: relative;
+  text-align: center;
+  top: 35%;
+  color: #ffffff;
+}
+
+.modal__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  background-color: #ffffff;
 }
 /*# sourceMappingURL=style.css.map */
