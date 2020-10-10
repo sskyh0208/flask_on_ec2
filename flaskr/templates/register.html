@@ -1,15 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-    <form method="post">
-        {{ form.csrf_token }}
-        <dl>
-            <div>{{ form.username(placeholder='ユーザ名') }}</div>
-        </dl>
-        <dl>
-            <div>{{ form.email(placeholder='メールアドレス') }}</div>
-        </dl>
-        {{ form.submit()}}
-    </form>
+<div class="form">
+    <div class="form__wrapper">
+        <h1>新規登録</h1>
+        {% if get_flashed_messages() %}
+        <div class="messages">
+            {% for messages in get_flashed_messages() %}
+                <p>{{ messages }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if form and form.errors %}
+        <div class="messages">
+            {% for field in form.errors %}
+                {% for error in form.errors[field] %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post">
+            {{ form.csrf_token }}
+            <dl>
+                <div>{{ form.username(placeholder='ユーザ名') }}</div>
+            </dl>
+            <dl>
+                <div>{{ form.email(placeholder='メールアドレス') }}</div>
+            </dl>
+            {{ form.submit()}}
+        </form>
+    </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 import os
 import datetime
 
-from flask import abort, Blueprint, request, render_template, redirect, url_for, flash, session
+from flask import abort, Blueprint, request, render_template, redirect, url_for, flash, session, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
 
@@ -60,13 +60,14 @@ def register():
         with db.session.begin(subtransactions=True):
             token = UserPasswordResetToken.publish_token(user)
         db.session.commit()
-        flash('パスワード設定用のURLをメールにてお送りしました。ご確認ください')
+        flash('パスワード設定用のURLをメールにてお送りしました。')
         subject = conf['TempRegister']['Subject']
-        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
-        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
+        body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Test']).replace('<token>', token)
+        # body = conf['TempRegister']['Body'].replace('<username>', form.username.data).replace('<endpoint>', conf['TempRegister']['Endpoint']['Prod']).replace('<token>', token)
         msg = Message(subject, sender='admin', recipients=[form.email.data])
         msg.body = body
         mail.send(msg)
+        # print(body)
         return redirect(url_for('app.login'))
     return render_template('register.html', form=form)
 
@@ -86,7 +87,7 @@ def password_reset(token):
         flash('本登録が完了しました')
         subject = conf['Register']['Subject']
         body = conf['Register']['Body'].replace('<username>', user.username)
-        msg = Message(subject, sender='admin', recipients=[user.email])
+        msg = Message(subject, sender='mpec.dev@gmail.com', recipients=[user.email])
         msg.body = body
         mail.send(msg)
         # メール送信処理
@@ -175,12 +176,10 @@ def this_month_timecards():
     timecards = TimeCard.select_monthly_timecards_by_user_id(user.id, today.year, reformat_number(today.month))
     timecard_table = {}
     for timecard in timecards:
-        print(timecard)
+        # print(timecard)
         day = str(timecard.date).split('-')[2]
         timecard_table[int(day)] = timecard
     
-    for k, v in timecard_table.items():
-        print(f'{k} : {v}')
     monthly_cal = make_monthly_calender(today.year, today.month)
 
     return render_template('this_month_timecards.html', timecards=timecards, monthly_cal=monthly_cal, timecard_table=timecard_table)
@@ -202,3 +201,33 @@ def stamping():
         db.session.commit()
 
     return redirect(url_for('app.timecard'))
+
+@bp.route('/time_edit', methods=['GET'])
+@login_required
+def time_edit():
+    action = request.args.get('action')
+    date = request.args.get('date').split('-')
+    time = request.args.get('time')
+    year = date[0]
+    month = reformat_number(date[1])
+    day = reformat_number(date[2])
+    date = f'{year}-{month}-{day}'
+    new_datetime = datetime.datetime.strptime(f'{date} {time}:00', '%Y-%m-%d %H:%M:%S')
+
+    user = User.select_user_by_email(current_user.email)
+    timecard = TimeCard.select_target_timecard_by_date(user.id, date)
+    
+    if not timecard:
+        timecard = TimeCard(user.id, new_datetime)
+    
+    with db.session.begin(subtransactions=True):
+        if action == 'start':
+            timecard.punch_in(new_datetime)
+            new_time = timecard.start.strftime('%H:%M')
+        else:
+            timecard.punch_out(new_datetime)
+            new_time = timecard.end.strftime('%H:%M')
+    db.session.commit()
+
+
+    return jsonify(time=new_time, total=timecard.working_hours)

@@ -1,35 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-    <h1>{{ monthly_cal.year }}年 {{ monthly_cal.month }}月</h1>
-    <table>
-        <tr>
-            <th>日付</th>
-            <th></th>
-            <th>出勤時間</th>
-            <th>退勤時間</th>
-            <th>労働時間</th>
-        </tr>
-        {% for day, week in monthly_cal.day.items() %}
-        <tr>
-            <td>{{ day }}({{ week }})</td>
-            <td></td>
-            {% if day in timecard_table %}
-            <td>{{ timecard_table[day].start.strftime('%H:%M') }}</td>
-            {% if not timecard_table[day].end is none %}
-            <td>{{ timecard_table[day].end.strftime('%H:%M') }}</td>
-            <td>{{ timecard_table[day].working_hours }}</td>
-            {% else %}
-            <td></td>
-            <td></td>
-            {% endif %}
-            {% else %}
-            <td></td>
-            <td></td>
-            <td></td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
+<div class="calender">
+    <div class="calender__wrapper">
+        <div class="calender__title">
+            <h1>{{ monthly_cal.year }}年 {{ monthly_cal.month }}月</h1>
+        </div>
+        <div class="calender__table">
+            <table>
+                <tr>
+                    <th>日付</th>
+                    <th>出勤</th>
+                    <th>退勤</th>
+                    <th>合計</th>
+                </tr>
+                {% for day, week in monthly_cal.day.items() %}
+                <tr id="{{ day }}" class="{{ monthly_cal.year }}-{{ monthly_cal.month }}-{{ day }}">
+                    <td>{{ day }}({{ week }})</td>
+                    {% if day in timecard_table %}
+                    <td class="start"><span>{{ timecard_table[day].start.strftime('%H:%M') }}</span></td>
+                    {% if not timecard_table[day].end is none %}
+                    <td class="end"><span>{{ timecard_table[day].end.strftime('%H:%M') }}</span></td>
+                    <td class="total"><span>{{ timecard_table[day].working_hours }}</span></td>
+                    {% else %}
+                    <td class="end"></td>
+                    <td class="total"></td>
+                    {% endif %}
+                    {% else %}
+                    <td class="start"></td>
+                    <td class="end"></td>
+                    <td class="total"></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 </div>
-{% endblock %}]
+<div class="modal">
+    <div class="modal__bg">
+        <h1>時刻修正</h1>
+    </div>
+    <div class="modal__content"></div>
+</div>
+{% endblock %}

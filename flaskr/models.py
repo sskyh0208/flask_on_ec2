@@ -185,26 +185,28 @@ class TimeCard(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.Integer, db.ForeignKey('users.id'))
-    date = db.Column(db.Date, default=datetime.today())
+    date = db.Column(db.Date, default=None)
     start = db.Column(db.DateTime, default=None)
     end = db.Column(db.DateTime, default=None)
     working_hours = db.Column(db.Float, default=0)
 
-    def __init__(self, user_id):
+    def __init__(self, user_id, date=datetime.today()):
         self.user = user_id
+        self.date = date
     
-    def punch_in(self):
-        self.start = self._make_fix_punch_time()
-        db.session.add(self)
+    def punch_in(self, punch_time=None):
+        self.start = self._make_fix_punch_time(punch_time)
+        self.calc_working_hours()
 
-    def punch_out(self):
-        self.end = self._make_fix_punch_time()
-        hours = ((self.end - self.start).seconds / 60) / 60
-        self.working_hours = hours - 1 if hours >= 4.5 else hours
-        db.session.add(self)
+    def punch_out(self, punch_time=None):
+        self.end = self._make_fix_punch_time(punch_time)
+        self.calc_working_hours()
     
-    def _make_fix_punch_time(self):
-        punch_time = datetime.now()
+    def _make_fix_punch_time(self, punch_time):
+        if punch_time:
+            punch_time = punch_time
+        else:
+            punch_time = datetime.now()
         hour = punch_time.hour
         minute = punch_time.minute
 
@@ -214,11 +216,21 @@ class TimeCard(db.Model):
             minute = 30
         elif 31 <= minute <= 45:
             minute = 45
-        else:
+        elif 46 <= minute <= 59:
             minute = 0
             hour += 1 
         punch_time = datetime(punch_time.year, punch_time.month, punch_time.day, hour, minute)
         return punch_time
+    
+    def calc_working_hours(self):
+        try:
+            hours = ((self.end - self.start).seconds / 60) / 60
+            self.working_hours = hours - 1 if hours >= 4.5 else hours
+        except Exception as e:
+            print(e)
+        finally:
+            db.session.add(self)
+
 
     @classmethod
     def select_today_timecard_by_user_id(cls, user_id):
@@ -233,3 +245,7 @@ class TimeCard(db.Model):
             cls.date.like(target)
             )
         ).order_by(cls.date).all()
+    
+    @classmethod
+    def select_target_timecard_by_date(cls, user_id, date):
+        return cls.query.filter_by(user=user_id, date=date).first()
