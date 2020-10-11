@@ -192,7 +192,7 @@ form dl {
 }
 
 .calender__table th {
-  width: 30%;
+  width: 15%;
 }
 
 .calender__table th:first-child {
@@ -208,7 +208,7 @@ form dl {
   text-align: right;
 }
 
-.calender__table td:hover:not(:first-child):not(:last-child) {
+.calender__table td:hover:not(:first-child):not(:nth-child(2)):not(:last-child) {
   background-color: #b3b3b3;
   cursor: pointer;
 }

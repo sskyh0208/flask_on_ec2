@@ -27,8 +27,8 @@ s3 = boto3.client('s3',
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(BaseConfig)
-    # app.config.from_object(TestConfig)
+    # app.config.from_object(BaseConfig)
+    app.config.from_object(TestConfig)
     login_manager.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)

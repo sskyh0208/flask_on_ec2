@@ -9,6 +9,7 @@
             <table>
                 <tr>
                     <th>日付</th>
+                    <th>状態</th>
                     <th>出勤</th>
                     <th>退勤</th>
                     <th>合計</th>
@@ -16,6 +17,7 @@
                 {% for day, week in monthly_cal.day.items() %}
                 <tr id="{{ day }}" class="{{ monthly_cal.year }}-{{ monthly_cal.month }}-{{ day }}">
                     <td>{{ day }}({{ week }})</td>
+                    <td></td>
                     {% if day in timecard_table %}
                     <td class="start"><span>{{ timecard_table[day].start.strftime('%H:%M') }}</span></td>
                     {% if not timecard_table[day].end is none %}
