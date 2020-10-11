@@ -17,18 +17,18 @@ login_manager.login_message = 'ログインしてください'
 mail = Mail()
 migrate = Migrate()
 db = SQLAlchemy()
-# with open('flaskr/config.yml', encoding='utf-8') as file:
-#     conf = yaml.safe_load(file)
-with open('/var/www/flask_on_ec2/flaskr/config.yml', encoding='utf-8') as file:
+with open('flaskr/config.yml', encoding='utf-8') as file:
     conf = yaml.safe_load(file)
-s3 = boto3.client('s3', 
-    aws_access_key_id=BaseConfig.AWS_ACCESS_KEY,
-    aws_secret_access_key=BaseConfig.AWS_SECRET_ACCESS_KEY)
+# with open('/var/www/flask_on_ec2/flaskr/config.yml', encoding='utf-8') as file:
+#     conf = yaml.safe_load(file)
+# s3 = boto3.client('s3', 
+#     aws_access_key_id=BaseConfig.AWS_ACCESS_KEY,
+#     aws_secret_access_key=BaseConfig.AWS_SECRET_ACCESS_KEY)
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(BaseConfig)
-    # app.config.from_object(TestConfig)
+    # app.config.from_object(BaseConfig)
+    app.config.from_object(TestConfig)
     login_manager.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)

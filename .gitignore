@@ -3,6 +3,9 @@ my_venv
 migrations
 __pycache__
 test.sqlite3
+flaskr/__init__.py
 flaskr/config.py
 flaskr/config.yml
 flaskr/static/user_image
+app.py
+
